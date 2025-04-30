@@ -42,6 +42,9 @@ Projet-OPSCI/
 │   ├── .env
 │   └── docker-compose.yml
 │
+├── script/                      # scripts de lancement et d'arrêt des services
+│   ├── start.sh
+│   └── stop.sh
 ├── strapi/                      # Backend CMS (Strapi)
 │   ├── config/
 │   ├── src/
