@@ -59,6 +59,16 @@ Projet-OPSCI/
 
 ## 🏁 Déploiement étape par étape
 
+🛠️ Création initiale du projet Strapi (si non existant)
+⚠️ À faire uniquement si le dossier strapi/ n'existe pas encore. Sinon, passe à l'étape suivante.
+
+Dans un terminal, exécute :
+
+```bash
+npx create-strapi-app strapi
+```
+Choisir la base de donnée, personnaliser ou poursuivre en spammant la touche Entrée.
+
 ### 1️⃣ Lancer l'infrastructure principale (Strapi + PostgreSQL + Frontend)
 
 Depuis le **dossier parent**, exécutez :
