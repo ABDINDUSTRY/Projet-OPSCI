@@ -55,6 +55,8 @@ Projet-OPSCI/
 
 ---
 
+# PARTIE 1 : Projet
+
 ## 🏁 Déploiement étape par étape
 
 ### 1️⃣ Lancer l'infrastructure principale (Strapi + PostgreSQL + Frontend)
@@ -126,6 +128,8 @@ docker-compose up -d
 > 🎨 Pour accélérer les traitements côté frontend, vous pouvez supprimer des produits via Strapi.
 
 ---
+
+# PARTIE 2 : TME_10_11
 
 ### 5️⃣ Lancer le broker MQTT
 
