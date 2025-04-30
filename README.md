@@ -7,6 +7,8 @@
 - Deschamps Joseph 3802649
 - Sacko Abdoul-Hakim 21213015
 
+## Vidéo de présentation du projet : https://youtu.be/KDiF4dOgc7g
+
 ## 🎯 Objectif
 
 Ce projet a pour but de mettre en place une infrastructure complète de gestion de produits connectés, intégrant les composants suivants :
