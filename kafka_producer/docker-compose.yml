@@ -1,0 +1,102 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - '2181:2181'
+    expose:
+      - '2181'
+    networks:
+      - kafka_network
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - '9092:9092'
+      - '9093:9093'
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://localhost:9093,OUTSIDE://kafka:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKAJS_NO_PARTITIONER_WARNING: '1'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_NO_LISTENER_AUTHENTICATION_PLAINTEXT: 'true'
+      KAFKA_NO_LISTENER_AUTHENTICATION_SSL: 'true'
+      KAFKA_BROKER_ID: 1
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_RETENTION_BYTES: 1073741824
+      KAFKA_LOG_DIRS: /kafka/logs
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka_network
+
+  product-producer:
+    image: arthurescriou/product-producer:1.0.0
+    environment:
+      BROKER_1: kafka:9092
+      BROKER_2: kafka:9092
+      BROKER_3: kafka:9092
+      TOPIC: product
+      FILE_NAME: /data/products.csv
+    networks:
+      - kafka_network
+    volumes:
+      - ./products.csv:/data/products.csv
+
+  product-consumer:
+    image: arthurescriou/product-consumer:1.0.3
+    environment:
+      BROKER_1: kafka:9092
+      BROKER_2: kafka:9092
+      BROKER_3: kafka:9092
+      TOPIC: product
+      STRAPI_TOKEN: f1e8ce75df9889e86c6423d31b24a35ac685c60f7f46b945fa9a99f1f0173e169fa709a9d2e746da901a54361c418000dcf03ee82536fa7675ff251885a9611e3ec068d00a7e06d5ff0b2546287a651aac66bee3f44e88170ff1ab276e388e8cb0ef13a50bbea85e2139799538eeb4b2f18214499820f090610a40be792ec4aa
+      STRAPI_URL: http://strapi:1337
+    networks:
+      - kafka_network
+      - strapi_network
+
+  event-producer:
+    image: arthurescriou/event-producer:1.0.3
+    environment:
+      BROKER_1: kafka:9092
+      BROKER_2: kafka:9092
+      BROKER_3: kafka:9092
+      TOPIC: event
+      FILE_NAME: /data/events.csv
+    volumes: 
+      - ./events.csv:/data/events.csv
+    networks: 
+      - kafka_network
+      - strapi_network
+
+  event-consumer:
+      image: arthurescriou/event-consumer:1.0.0
+      environment:
+        BROKER_1: kafka:9092
+        BROKER_2: kafka:9092
+        BROKER_3: kafka:9092
+        STRAPI_TOKEN: f1e8ce75df9889e86c6423d31b24a35ac685c60f7f46b945fa9a99f1f0173e169fa709a9d2e746da901a54361c418000dcf03ee82536fa7675ff251885a9611e3ec068d00a7e06d5ff0b2546287a651aac66bee3f44e88170ff1ab276e388e8cb0ef13a50bbea85e2139799538eeb4b2f18214499820f090610a40be792ec4aa
+        STRAPI_URL: http://strapi:1337
+        TOPIC: event
+      networks: 
+      - kafka_network
+      - strapi_network
+
+networks:
+  kafka_network:
+    name: kafka_network
+    driver: bridge
+  strapi_network:
+    external: true

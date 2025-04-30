@@ -1,0 +1,12 @@
+version: '3'
+services:
+  mqtt-kafka-connector:
+    image: arthurescriou/mqtt-kafka-connector:1.0.0
+    env_file:
+      - .env
+    networks:
+      - kafka_network
+
+networks:
+  kafka_network:
+    external: true

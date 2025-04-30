@@ -1,0 +1,33 @@
+services:
+
+  strapi-pg:
+    container_name: strapi-pg
+    restart: unless-stopped
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: strapi
+      POSTGRES_DB: strapi
+    ports:
+      - "5432:5432"
+    networks:
+      - strapi_network
+
+  strapi:
+    container_name: strapi
+    build: ./strapi
+    restart: unless-stopped
+    env_file: ./strapi/.env
+    environment:
+      NODE_ENV: production
+    ports:
+      - "1337:1337"
+    networks:
+      - strapi_network
+    depends_on:
+      - strapi-pg
+
+networks:
+  strapi_network:
+    name: strapi_network
+    driver: bridge
