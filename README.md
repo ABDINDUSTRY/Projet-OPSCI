@@ -158,7 +158,7 @@ docker-compose up -d
 
 ---
 
-### 5️⃣ Lancer le broker MQTT
+### 5️⃣ Lancer le broker MQTT après l'éxécution de toutes les étapes précédentes
 
 Dans le dossier `mqtt/` :
 
