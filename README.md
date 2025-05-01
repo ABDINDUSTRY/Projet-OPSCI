@@ -62,6 +62,11 @@ Projet-OPSCI/
 
 # PARTIE 1 : Projet
 
+---
+## Architecture
+<img src="https://www-npa.lip6.fr/~buixuan/files/opsci2024/img/projet2.png"/>
+---
+
 ## 🏁 Déploiement étape par étape
 
 🛠️ Création initiale du projet Strapi (si non existant)
@@ -145,6 +150,13 @@ docker-compose up -d
 ---
 
 # PARTIE 2 : TME_10_11
+
+---
+## Architecture 
+
+<img src="https://www-npa.lip6.fr/~buixuan/files/opsci2024/img/mqtt-OPSCI.jpg"/>
+
+---
 
 ### 5️⃣ Lancer le broker MQTT
 
