@@ -1,0 +1,89 @@
+# TME 10 - 11 OPSCI: Internet des objets
+
+Ces TME (not&eacute;s) ont pour objectif d'ajouter la gestion d'objets connect&eacute;s dans l'architecture cr&eacute;&eacute; dans le projet:
+ - https://www-npa.lip6.fr/~buixuan/files/opsci2024/opsci2024_projet.md
+
+## Pr&eacute;requis
+
+Pour ces TME on a besoin de l'architecture &eacute;v&egrave;nementiel car on va cr&eacute;er des producteur "IoT" pour le kafka.
+
+Il faut donc un kafka fonctionnel avec un strapi pour consommer les donn&eacute;es.
+
+## Architecture
+
+On souhaite cr&eacute;er un syst&egrave;me r&eacute;cup&eacute;rant des donn&eacute;es provenant du "terrain". Cependant on ne peut pas exposer notre kafka &agrave; l'ext&eacute;rieur de notre data center pour des raisons de s&eacute;curit&eacute;.
+
+On va donc passer par un autre message broker pour communiquer avec nos client "IoT".
+
+<img src="https://www-npa.lip6.fr/~buixuan/files/opsci2024/img/mqtt-OPSCI.jpg"/>
+
+### MQTT
+
+On veut lancer un broker MQTT.
+
+Pour &ccedil;a on va utiliser <a href="https://mosquitto.org/">Mosquitto</a>, une impl&eacute;mentation open source de MQTT.
+
+On peut le lancer facilement avec <a href="https://hub.docker.com/_/eclipse-mosquitto" >l'image officielle </a>.
+
+Il suffit de cr&eacute;er un fichier `mosquitto.conf` et de le lier avec un volume. (voir la doc officielle pour l'emplacement du fichier dans le conteneur)
+
+```
+#mosquitto.conf
+persistence true
+persistence_location /mosquitto/data/
+log_dest file /mosquitto/log/mosquitto.log
+allow_anonymous true
+listener 1883
+protocol websockets
+```
+
+Une fois le conteneur lanc&eacute; on peut se connecter dessus avec client `mqtt` sur le port 1883.
+
+Vous pouvez utiliser ces <a href="https://github.com/arthurescriou/mqtt-js-test">scripts</a> pour tester votre broker mosquitto.
+
+_NB: On utilise ici des websocket en protocole car on veut communiquer avec un navigateur (qui ne g&egrave;re pas nativement le protocole MQTT qu'on va encapsuler dans une websocket).
+Pour &ccedil;a on devra utiliser des URL `ws://url` et non `mqtt://url`._
+
+### Connecteur MQTT to Kafka
+
+Il nous faut un &eacute;l&eacute;ment qui fait le lien entre le broker MQTT et le broker Kafka.
+
+Pour &ccedil;a vous devez d&eacute;ployer un conteneur pouvant communiquer avec les deux :
+
+Ex&eacute;cuter `docker pull arthurescriou/mqtt-kafka-connector:1.0.0`
+
+pour r&eacute;cup&eacute;rer le connecteur, ou suivre le lien suivant :
+
+<a href="https://hub.docker.com/repository/docker/arthurescriou/mqtt-kafka-connector/general"> https://hub.docker.com/repository/docker/arthurescriou/mqtt-kafka-connector/general </a>
+
+
+Variable d'environment par d&eacute;faut :
+
+```sh
+BROKER_1='localhost:9092'
+BROKER_2='localhost:9092'
+BROKER_3='localhost:9092'
+KAFKA_TOPIC='stock'
+
+MQTT_TOPIC='topic'
+MQTT_ENDPOINT='ws://localhost:1883'
+```
+
+### Client web
+
+Vous pouvez tester de modifier un stock depuis un <a href="https://mqtt-test-front.onrender.com/" >frontend</a> (veillez &agrave; configurer correctement dans le formulaire).
+
+## Rendu attendu :
+
+Un seul fichier de rendu par personne sur l'espace Moodle de l'UE.
+Le fichier est de type archive (zip par exemple) contenant:
+
+- Une vid&eacute;o de d&eacute;monstration type **screencast** , qui parcours les diff&eacute;rentes fonctionnalit&eacute;es de l'application d&eacute;ploy&eacute;e. (Montrez toute la chaine de modification de stock: front -> MQTT -> kafka -> strapi).
+
+- Un d&eacute;p&ocirc;t git accessible en ligne comportant tous les fichiers que vous avez &eacute;crit (Dockerfile, script shell, etc).
+
+### Groupe
+
+Ce projet ce fera en bin&ocirc;me. Veillez bien &agrave; sp&eacute;cifier vos num&eacute;ros &eacute;tudiants dans le `readme.md`.
+
+La date de rendu limite est le **13 avril 2025 &agrave; 23h59**.
